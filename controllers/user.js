@@ -1,7 +1,5 @@
 import { createError } from "../error.js";
-import users from "../models/Users.js";
 import Users from "../models/Users.js"
-import bcrypt from "bcryptjs";
 
 export const getAllUser = async(req,res) =>{
 

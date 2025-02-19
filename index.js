@@ -2,6 +2,8 @@ import express from "express"
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import users from "./routes/users.js";
+import expenseGroup from "./routes/createExpenseGroup.js"
+import expense from "./routes/createExpenseInfo.js"
 import cookieParser from "cookie-parser";
 
 dotenv.config()
@@ -24,6 +26,8 @@ app.listen(8800,()=>{
 app.use(cookieParser())
 app.use(express.json())
 app.use("/user",users)
+app.use("/ExpenseGroup",expenseGroup)
+app.use("/expense",expense)
 
 
 app.use((err,req,res,next)=>{

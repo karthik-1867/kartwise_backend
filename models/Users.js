@@ -24,6 +24,34 @@ const UserSchema = new mongoose.Schema({
     inviteAcceptedUsers:{
         type:Array,
         default:[]
+    },
+    createExpenseGroup:{
+        type:Array,
+        default:[]
+    },
+    createExpenseInfo:{
+        type:Array,
+        default:[]
+    },
+    expenditure:{
+        type:Number,
+        default:0
+    },
+    recoveredExpenditure:{
+        type:Number,
+        default:0
+    },
+    contributed:{
+        type:Number,
+        default:0
+    },
+    recived:{
+        type:Number,
+        default:0
+    },
+    paidBack:{
+        type:Number,
+        default:0
     }
 },{timestamps:true})
 
