@@ -1,4 +1,5 @@
 import { createError } from "../error.js";
+import Notification from "../models/Notification.js";
 import Users from "../models/Users.js"
 
 export const getAllUser = async(req,res) =>{
@@ -16,9 +17,19 @@ export const inviteRequest = async(req,res,next)=>{
      if(req.user.id !== req.params.id){
         try{
            
-           const receiver = await Users.findByIdAndUpdate(req.params.id,{$addToSet:{inviteRequest:req.user.id}});
 
-           res.status(200).json(receiver);
+           const notification = new Notification({"type":"Invite","Message":"","senderId":req.user.id})
+
+           await notification.save()
+
+           console.log(notification)
+
+           await Users.findByIdAndUpdate(req.params.id,{$addToSet:{inviteRequest:req.user.id},$push:{Notifications:notification.id}});
+          
+
+           res.status(200).json(notification);
+
+
 
         }catch(e){
             res.status(404).json(e.message);
@@ -36,7 +47,10 @@ export const acceptInvite = async(req,res,next) => {
     {
 
         try{
-            const receiver = await Users.findByIdAndUpdate(req.params.id,{$addToSet:{inviteAcceptedUsers:req.user.id}})
+            const notification = new Notification({"type":"Message","message":`${user.name} accepted your request`,"senderId":req.user.id})
+
+            await notification.save()
+            const receiver = await Users.findByIdAndUpdate(req.params.id,{$addToSet:{inviteAcceptedUsers:req.user.id},$push:{Notifications:notification.id}})
             
             user.inviteAcceptedUsers.push(req.params.id);
             user.inviteRequest.pull(req.params.id);
@@ -67,6 +81,25 @@ export const removeInvite = async(req,res,next) => {
         }else{
             res.status(401).json("no such users")
         }
+    }catch(e){
+       res.status(401).json(e.message);
+    }
+}
+
+
+
+export const removeInviteRequest = async(req,res,next) => {
+    
+
+    try{
+        const user = await Users.findByIdAndUpdate(req.user.id,{$pull:{inviteRequest:req.params.id}});
+        const notification = new Notification({"type":"Message","message":`${user.name} rejected your request`,"senderId":req.user.id})
+
+        await notification.save()
+
+        const receiver = await Users.findByIdAndUpdate(req.params.id,{$push:{Notifications:notification.id}})
+
+        res.status(200).json(user);
     }catch(e){
        res.status(401).json(e.message);
     }

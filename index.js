@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import users from "./routes/users.js";
 import expenseGroup from "./routes/createExpenseGroup.js"
 import expense from "./routes/createExpenseInfo.js"
+import notification from "./routes/notification.js"
 import cookieParser from "cookie-parser";
 
 dotenv.config()
@@ -28,6 +29,7 @@ app.use(express.json())
 app.use("/user",users)
 app.use("/ExpenseGroup",expenseGroup)
 app.use("/expense",expense)
+app.use("/notification",notification)
 
 
 app.use((err,req,res,next)=>{

@@ -1,5 +1,5 @@
 import express from "express"
-import { acceptInvite, getAllUser, inviteRequest, removeInvite } from "../controllers/user.js";
+import { acceptInvite, getAllUser, inviteRequest, removeInvite, removeInviteRequest } from "../controllers/user.js";
 import { signin, signup } from "../controllers/auth.js";
 import { verifyToken } from "../verifiyToken.js";
 
@@ -15,7 +15,9 @@ router.post("/inviteRequest/:id",verifyToken,inviteRequest);
 
 router.post("/acceptInvite/:id",verifyToken,acceptInvite);
 
-router.post("/removeInvite/:id",verifyToken,removeInvite)
+router.post("/removeInvitedUser/:id",verifyToken,removeInvite)
+
+router.post("/removeInviteRequest/:id",verifyToken,removeInviteRequest)
 
 export default router;
  

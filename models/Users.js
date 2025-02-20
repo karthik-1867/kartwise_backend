@@ -52,6 +52,10 @@ const UserSchema = new mongoose.Schema({
     paidBack:{
         type:Number,
         default:0
+    },
+    Notifications:{
+        type:Array,
+        default:[]
     }
 },{timestamps:true})
 
