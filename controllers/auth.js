@@ -37,8 +37,8 @@ export const signin = async(req,res,next) => {
        //sending token to cookies
        res.cookie("access_token",token,{
         httpOnly:true,
-        secure: false,          
-        sameSite: "Lax" 
+        secure: true,          
+        sameSite: "None" 
        }).status(200).json(others);
     }catch(e){
         res.status(404).json(e.message)
