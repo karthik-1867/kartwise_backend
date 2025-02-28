@@ -30,7 +30,7 @@ app.listen(8800,()=>{
 //     credentials: true, // Allow cookies to be sent
 //   }));
 
-app.use(cors());
+// app.use(cors());
 // app.set("trust proxy", 1);
 
 
