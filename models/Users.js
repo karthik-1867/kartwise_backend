@@ -17,6 +17,10 @@ const UserSchema = new mongoose.Schema({
     profilePicture:{
         type:String
     },
+    PendingInviteRequest:{
+        type:Array,
+        default:[]
+    },
     inviteRequest:{
         type:Array,
         default:[]

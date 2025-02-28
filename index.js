@@ -6,6 +6,7 @@ import expenseGroup from "./routes/createExpenseGroup.js"
 import expense from "./routes/createExpenseInfo.js"
 import notification from "./routes/notification.js"
 import cookieParser from "cookie-parser";
+import cors from "cors"
 
 dotenv.config()
 
@@ -23,6 +24,18 @@ app.listen(8800,()=>{
     console.log("connected")
     connect();
 })
+
+// app.use(cors({
+//     origin: 'http://localhost:3000', // Your React app URL
+//     credentials: true, // Allow cookies to be sent
+//   }));
+
+  app.use(cors({
+    origin: 'http://localhost:3000', // Frontend URL
+    methods: ['GET', 'POST', 'DELETE'], // Allow both GET and POST methods
+    credentials: true, // Allow sending credentials (cookies, etc)
+  }));
+  
 
 app.use(cookieParser())
 app.use(express.json())
