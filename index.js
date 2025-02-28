@@ -31,15 +31,29 @@ app.listen(8800,()=>{
 //   }));
 
 app.use(cors());
-app.set("trust proxy", 1);
+// app.set("trust proxy", 1);
 
 
-  app.use(cors({
-    origin: 'http://localhost:3000', // Frontend URL
-    methods: ['GET', 'POST', 'DELETE'], // Allow both GET and POST methods
-    credentials: true, // Allow sending credentials (cookies, etc)
-  }));
+//   app.use(cors({
+//     origin: 'http://localhost:3000', // Frontend URL
+//     methods: ['GET', 'POST', 'DELETE'], // Allow both GET and POST methods
+//     credentials: true, // Allow sending credentials (cookies, etc)
+//   }));
   
+
+
+const corsOptions = {
+  origin: 'http://localhost:3000',  // Explicitly allow this origin
+  methods: ['GET', 'POST', 'DELETE'],  // Allow these methods
+  credentials: true,  // Allow sending cookies and credentials
+  allowedHeaders: ['Content-Type', 'Authorization'],  // Allow these headers
+};
+
+// Apply CORS middleware globally to all routes
+app.use(cors(corsOptions));
+
+// Handle preflight OPTIONS requests
+app.options('*', cors(corsOptions));
 
 app.use(cookieParser())
 app.use(express.json())
