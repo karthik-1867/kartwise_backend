@@ -38,7 +38,6 @@ app.set("trust proxy", 1);
     origin: 'http://localhost:3000', // Frontend URL
     methods: ['GET', 'POST', 'DELETE'], // Allow both GET and POST methods
     credentials: true, // Allow sending credentials (cookies, etc)
-    sameSite: 'None'
   }));
   
 
