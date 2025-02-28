@@ -30,6 +30,10 @@ app.listen(8800,()=>{
 //     credentials: true, // Allow cookies to be sent
 //   }));
 
+app.use(cors());
+app.set("trust proxy", 1);
+
+
   app.use(cors({
     origin: 'http://localhost:3000', // Frontend URL
     methods: ['GET', 'POST', 'DELETE'], // Allow both GET and POST methods
