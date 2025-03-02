@@ -43,7 +43,7 @@ app.listen(8800,()=>{
 
 
 const corsOptions = {
-  origin: 'http://localhost:3000',  // Explicitly allow this origin
+  origin: 'https://kartwise-app-api-integration.onrender.com',  // Explicitly allow this origin
   methods: ['GET', 'POST', 'DELETE'],  // Allow these methods
   credentials: true,  // Allow sending cookies and credentials
   allowedHeaders: ['Content-Type', 'Authorization'],  // Allow these headers
