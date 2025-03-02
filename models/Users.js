@@ -57,6 +57,10 @@ const UserSchema = new mongoose.Schema({
         type:Number,
         default:0
     },
+    urShare:{
+        type:Number,
+        default:0
+    },
     Notifications:{
         type:Array,
         default:[]
