@@ -35,13 +35,13 @@ router.post("/createExpenseDetails",verifyToken,async(req,res,next)=>{
         console.log("final")
         console.log(req.body.users)
         console.log("before error")
-        const val = (req.body.users.reduce((acc,cur)=>(acc+Number(cur.expense)),0))-(req.body.users.filter((i)=>i.owner==true)[0].expense)
+        const val = (req.body.users.reduce((acc,cur)=>(acc+Number(cur.expense)),0))
         console.log("passed")
         const ownerPaidBack = req.body.users.filter((i)=>i.owner==true)[0].expense
 
         console.log("total")
         console.log(val);
-        req.body = {...req.body,"paid":val,"ownerReceived":0,"ownerId":ownerDetail.id}
+        req.body = {...req.body,"paid":val,"ownerReceived":ownerPaidBack,"ownerId":ownerDetail.id}
 
         console.log("owner id")
         console.log(ownerDetail.id);
@@ -50,7 +50,7 @@ router.post("/createExpenseDetails",verifyToken,async(req,res,next)=>{
         await expense.save();
 
         const groupId = req.body.users.map((i)=>i.id)
-        const notification = new Notification({"type":"message","message":`${userDetail.name} has created group ${req.body.groupName}. ${ownerDetail.name} will be the owner of group. Amount of ${val+ownerPaidBack}rs has been contributed by ${ownerDetail.name} of which his part of ${ownerPaidBack} is deducted. Remaining ${val}rs needs to be paid to ${ownerDetail.name}`})
+        const notification = new Notification({"type":"message","groupName":`${expensegroup.title}`,"ExpenseName":`${req.body.groupName}`,"ExpenseOwner":`${ownerDetail.name}`,"message":`${userDetail.name} has created group ${req.body.groupName}. ${ownerDetail.name} will be the owner of group. Amount of ${val}rs has been contributed by ${ownerDetail.name} of which his part of ${ownerPaidBack} is deducted. Remaining ${val-ownerPaidBack}rs needs to be paid to ${ownerDetail.name}`})
 
         await notification.save()
 
@@ -59,13 +59,13 @@ router.post("/createExpenseDetails",verifyToken,async(req,res,next)=>{
         const result = await Users.updateMany(
             { _id: { $in: [...groupId] } }, // Match users with the given userIds
             { $push: {createExpenseInfo:expense.id,Notifications:notification.id},
-              $inc:{expenditure:val}
-            } // Apply the update
+              $inc:{expenditure:val,recoveredExpenditure:ownerPaidBack}
+            } // Apply theupdate
         );
 
         
         await Users.findByIdAndUpdate(ownerDetail.id,{
-            $inc:{contributed:val,paidBack:ownerPaidBack}
+            $inc:{contributed:val,paidBack:0,urShare:ownerPaidBack}
         })
 
         res.status(200).json(result);
@@ -150,9 +150,9 @@ router.post("/updateExpenseDetails/:id",verifyToken,async(req,res,next)=>{
                    let userDetail = await Users.findById(users.id);
                    let notification = ""
                    if(current_input.paidBack+users.paidBack<current_input.expense){
-                   notification = new Notification({"type":"message","message":`${currentInfoStatus.groupName} Group Notification : ${userDetail.name} has paid back ${current_input.paidBack+users.paidBack}rs to ${currentInfoStatus.owner}. Pending amount : ${current_input.expense-(current_input.paidBack+users.paidBack)}rs to be paid`})
+                   notification = new Notification({"type":"message","ExpenseName":`${currentInfoStatus.groupName}`,"ExpenseOwner":`${ownerDetail.name}`,"message":`${currentInfoStatus.groupName} Group Notification : ${userDetail.name} has paid back ${current_input.paidBack+users.paidBack}rs to ${currentInfoStatus.owner}. Pending amount : ${current_input.expense-(current_input.paidBack+users.paidBack)}rs to be paid`})
                    }else{
-                    notification = new Notification({"type":"message","message":`${currentInfoStatus.groupName} Group Notification : ${userDetail.name} has settled up ${current_input.paidBack+users.paidBack}rs to ${currentInfoStatus.owner}.`})
+                    notification = new Notification({"type":"message","ExpenseName":`${currentInfoStatus.groupName}`,"ExpenseOwner":`${ownerDetail.name}`,"message":`${currentInfoStatus.groupName} Group Notification : ${userDetail.name} has settled up ${current_input.paidBack+users.paidBack}rs to ${currentInfoStatus.owner}.`})
                    }
                    await notification.save();
                    await Users.updateMany(
@@ -263,13 +263,13 @@ router.delete("/deleteExpenseDetails/:id",verifyToken,async(req,res,next)=>{
         if(expense.ownerId!=req.user.id) return next(createError(403,`Only group owner that is ${expense.owner} can delete this expense`))
 
         const expenseMembers = expense.users.map((i)=>i.id);
-        const notification = new Notification({"type":"message","message":`${expense.owner} has deleted group ${expense.groupName}`})
+        const notification = new Notification({"type":"message","ExpenseName":`${expense.groupName}`,"ExpenseOwner":`${expense.owner}`,"message":`${expense.owner} has deleted group ${expense.groupName}`})
     
         await notification.save()
         await Users.updateMany(
             { _id: { $in: [...expenseMembers] } }, 
             { $pull: {createExpenseInfo:req.params.id},
-              $set :{expenditure:0,recoveredExpenditure:0,paidBack:0,recived:0,contributed:0},
+              $set :{expenditure:0,recoveredExpenditure:0,paidBack:0,recived:0,contributed:0,urShare:0},
               $push:{Notifications:notification.id}
             }
         );
